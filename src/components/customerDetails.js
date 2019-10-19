@@ -1,22 +1,61 @@
-import React,{useState} from "react";
+import React,{useState,useContext} from "react";
 import  "../design/style.css"
 import "../design/bootstrap.min.css"
 import secureLogo from "../images/secure-logos.png"
-
+import {CheckoutContext} from "./stepOne"
+//import Client from "shopify-buy";
 
 const CustomerInfo = () =>{
+    
     let [details,setDetails] = useState({
         firstName: "",
         lastName: "",
         email: "",
-        country: "us",
+        country: "Unites States",
         address: "",
         state: "",
         city: "",
+        phone: "",
         zipCode: ""
     });
-    
-    
+  let [checkout] = useContext(CheckoutContext); 
+    const Proceed = () =>{
+        checkout.client.checkout.updateEmail(checkout.checkoutId, details.email).then(() => {
+
+          
+
+        const shippingAddress = {
+            address1: details.address,
+            address2: null,
+            city: details.city,
+            company: null,
+            country: details.country,
+            firstName: details.firstName,
+            lastName: details.lastName,
+            phone: details.phone,
+            province: details.state,
+            zip: details.zipCode
+        };
+        /*
+        const shippingAddress = {
+            address1: 'Chestnut Street 92',
+            address2: 'Apartment 2',
+            city: 'Louisville',
+            company: null,
+            country: 'United States',
+            firstName: 'Bob',
+            lastName: 'Norman',
+            phone: '555-625-1199',
+            province: 'Kentucky',
+            zip: '40202'
+          };*/
+       // Update the shipping address for an existing checkout. Kentucky 40202
+       checkout.client.checkout.updateShippingAddress(checkout.checkoutId, shippingAddress).then(checkout => {
+        console.log(checkout)
+        console.log("Shipping Updated")
+       }).catch(error=>console.log(error));
+    });
+      }
     const  inputHandler = (e,field) =>{
         let tDetails = details;
         if(field=== "firstName") tDetails.firstName = e.target.value;
@@ -26,6 +65,7 @@ const CustomerInfo = () =>{
         else if(field=== "address") tDetails.address = e.target.value;
         else if(field=== "state") tDetails.state = e.target.value;
         else if(field=== "city") tDetails.city = e.target.value;
+        else if(field=== "phone") tDetails.phone = e.target.value;
         else if(field=== "zipCode") tDetails.zipCode = e.target.value;
         setDetails(tDetails);
     
@@ -61,14 +101,14 @@ return(<>
     <div className="col">
     <label htmlFor="country-input">Country</label>
     <select id="country-input" className="input-medium form-control"   onChange={(event) => inputHandler(event,"country")} required>
-    <option id="us_option_select" value="US">United States</option>
-    <option id="uk_option_select" value="GB">United Kingdom</option>
-    <option id="nl_option_select" value="NL">Netherlands</option>
-    <option id="de_option_select" value="DE">Germany</option>
-    <option id="be_option_select" value="BE">Belgium</option>
-    <option id="fr_option_select" value="FR">France</option>
-    <option id="es_option_select" value="ES">Spain</option>
-    <option id="it_option_select" value="IT">Italy</option>
+    <option id="us_option_select" value="United States">United States</option>
+    <option id="uk_option_select" value="United Kingdom">United Kingdom</option>
+    <option id="nl_option_select" value="Netherlands">Netherlands</option>
+    <option id="de_option_select" value="Germany">Germany</option>
+    <option id="be_option_select" value="Belgium">Belgium</option>
+    <option id="fr_option_select" value="France">France</option>
+    <option id="es_option_select" value="Spain">Spain</option>
+    <option id="it_option_select" value="Italy">Italy</option>
     </select>
     </div>
     </div>
@@ -77,6 +117,13 @@ return(<>
     <input id="street-input" className="input" type="text" name="street" placeholder="Street " onChange={(event) => inputHandler(event,"address")} required />
     </div>
     </div>
+
+    <div className="row form-row">
+    <div className="col-12">
+    <input id="phone-input" className="input" type="text" name="phonenum" placeholder="Phone Number" onChange={(event) => inputHandler(event,"phone")} required/>
+    </div>
+    </div>
+
     <div className="row form-row">
     <div className="col-12">
     <input id="city-input" className="input" type="text" name="city" placeholder="City" onChange={(event) => inputHandler(event,"city")} required/>
@@ -92,7 +139,7 @@ return(<>
     </div>
     <div className="row form-row">
     <div className="col">
-    <input id="submit-button" className="btn btn-lg white" type="button" onClick={() => displayInfo()} value="PROCEED TO PAYMENT" required/>
+    <input id="submit-button" className="btn btn-lg white" type="button" onClick={() => {displayInfo(); Proceed()}} value="PROCEED TO PAYMENT" required/>
     </div>
     </div>
     </form>

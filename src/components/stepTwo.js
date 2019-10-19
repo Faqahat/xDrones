@@ -1,4 +1,4 @@
-import React,{useState,useRef} from "react"
+import React,{useState,useRef,useContext} from "react"
 
 import  "../design/style.css"
 import "../design/bootstrap.min.css"
@@ -6,18 +6,65 @@ import addImage from "../images/add.svg"
 import upSell1 from "../images/upsell_1.png"
 import upSell2 from "../images/upsell_2.jpg"
 import upSell3 from "../images/upsell_3.jpg"
+//import Client from "shopify-buy";
+import {CheckoutContext} from "./stepOne"
+// Drone ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==
+// Cam Variant ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw=
+// Propeller ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==
+// Protective Bag  ID:  Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA3NDE5ODU3Nw==
+
+
+
 const SetTwo = () => {
+
 let myRef = useRef()
 let [addOn1 , setAddOn1] = useState(false);
 let [addOn2 , setAddOn2] = useState(false);
 let [addOn3 , setAddOn3] = useState(false);
+let [checkout] = useContext(CheckoutContext); 
+
+
+    /*const client = Client.buildClient({
+        domain: 'xdronespro.myshopify.com',
+        storefrontAccessToken: '9607987e0513ca24237f22f5f6bda724'
+      },fetch);*/
+      
+
 const addAddon = (addon) => {
-    console.log(addon)
-    if(addon === 1)       setAddOn1(true);
-    else if(addon === 2)  setAddOn2(true);
-    else if(addon === 3)  setAddOn3(true);
+   
+    if(addon === 1)      { 
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw==");
+        setAddOn1(true); 
+    }
+    else if(addon === 2)  
+    { 
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==");
+        setAddOn2(true); 
+    }
+    else if(addon === 3) { 
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA3NDE5ODU3Nw==");
+        setAddOn3(true); 
+    }
     window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
 }
+const AddItem = (variant_id) =>{
+
+    const lineItemsToAdd = [
+      {
+        variantId: variant_id,
+        quantity: checkout.quantity
+      }
+    ];
+    console.log(checkout)
+    
+    checkout.client.checkout.addLineItems(checkout.checkoutId, lineItemsToAdd).then((checkout) => {
+
+      console.log("Added to Cart [Quantity :" + checkout.quantity + "]"  );
+     
+      }).catch(error => console.log(error));
+
+}
+
 const removeAddon = (addon) => {
     console.log(addon)
     if(addon === 1) return setAddOn1(false);

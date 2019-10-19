@@ -24,13 +24,13 @@ const RecentSales = () => {
         {
 
         toaster.notify(({ onClose }) => (
-            <div class="ftxup-wrapper" >
-                <div class="ftxup-left">
+            <div className="ftxup-wrapper" >
+                <div className="ftxup-left">
                     <img src={expMark} alt=""/>
                 </div>
-                <div class="ftxup-right">
-                    <div class="ftxup-head">927 items sold this week</div>
-                    <div class="ftxup-footer">Stock is running out!</div>
+                <div className="ftxup-right">
+                    <div className="ftxup-head">927 items sold this week</div>
+                    <div className="ftxup-footer">Stock is running out!</div>
                 </div>
             </div>
               ),
