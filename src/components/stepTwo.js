@@ -8,6 +8,7 @@ import upSell2 from "../images/upsell_2.jpg"
 import upSell3 from "../images/upsell_3.jpg"
 //import Client from "shopify-buy";
 import {CheckoutContext} from "./stepOne"
+
 // Drone ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==
 // Cam Variant ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw=
 // Propeller ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==
@@ -16,11 +17,11 @@ import {CheckoutContext} from "./stepOne"
 
 
 const SetTwo = () => {
-
 let myRef = useRef()
 let [addOn1 , setAddOn1] = useState(false);
 let [addOn2 , setAddOn2] = useState(false);
 let [addOn3 , setAddOn3] = useState(false);
+let [cartItems, setCartItems] =  useState({addon1 : null , addon2: null , addon3: null});
 let [checkout] = useContext(CheckoutContext); 
 
 
@@ -30,24 +31,45 @@ let [checkout] = useContext(CheckoutContext);
       },fetch);*/
       
 
-const addAddon = (addon) => {
+const addAddon =  (addon) => {
    
     if(addon === 1)      { 
-        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw==");
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw==", 1);
+
         setAddOn1(true); 
+    
     }
     else if(addon === 2)  
     { 
-        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==");
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==",2);
         setAddOn2(true); 
     }
     else if(addon === 3) { 
-        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA3NDE5ODU3Nw==");
+        AddItem("Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA3NDE5ODU3Nw==",3);
         setAddOn3(true); 
     }
     window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
 }
-const AddItem = (variant_id) =>{
+const removeAddon = (addon) => {
+
+   
+    if(addon === 1)      { 
+        RemoveItem(cartItems.addon1);
+        setAddOn1(false); 
+    }
+    else if(addon === 2)  
+    { 
+        RemoveItem(cartItems.addon2);
+        setAddOn2(false); 
+    }
+    else if(addon === 3) { 
+        RemoveItem(cartItems.addon3);
+        setAddOn3(false); 
+    }
+    window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
+    
+}
+const AddItem =  (variant_id,item) =>{
 
     const lineItemsToAdd = [
       {
@@ -55,23 +77,32 @@ const AddItem = (variant_id) =>{
         quantity: checkout.quantity
       }
     ];
-    console.log(checkout)
-    
-    checkout.client.checkout.addLineItems(checkout.checkoutId, lineItemsToAdd).then((checkout) => {
+    checkout.client.checkout.addLineItems(checkout.checkoutId, lineItemsToAdd).then((c) => {
 
       console.log("Added to Cart [Quantity :" + checkout.quantity + "]"  );
-     
+      let iIndex =  c.lineItems.findIndex(lineItem => lineItem.variant.id === variant_id);
+      let cartItemsx = cartItems;
+      if(item === 1) cartItemsx.addon1 = c.lineItems[iIndex].id;
+      else if(item === 2) cartItemsx.addon2 = c.lineItems[iIndex].id;
+      else if(item === 3) cartItemsx.addon3 = c.lineItems[iIndex].id;
+      setCartItems(cartItemsx);
+     // console.log(cartItems)
+   
+      }).catch(error => console.log(error));
+
+}
+const RemoveItem = (cartId) =>{
+
+
+    const lineItemIdsToRemove = [cartId];
+   // console.log(checkout)
+    checkout.client.checkout.removeLineItems(checkout.checkoutId, lineItemIdsToRemove).then((checkout) => {
+      console.log("Removed From Cart "  );
+      //console.log(checkout); 
       }).catch(error => console.log(error));
 
 }
 
-const removeAddon = (addon) => {
-    console.log(addon)
-    if(addon === 1) return setAddOn1(false);
-    if(addon === 2) return setAddOn2(false);
-    if(addon === 3) return setAddOn3(false);
-    else return ""
-}
 return(
 <>
 <div id="step-2-section" className="">

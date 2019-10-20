@@ -3,6 +3,7 @@ import  "../design/style.css"
 import "../design/bootstrap.min.css"
 import secureLogo from "../images/secure-logos.png"
 import {CheckoutContext} from "./stepOne"
+import Swal from 'sweetalert2'
 //import Client from "shopify-buy";
 
 const CustomerInfo = () =>{
@@ -20,6 +21,12 @@ const CustomerInfo = () =>{
     });
   let [checkout] = useContext(CheckoutContext); 
     const Proceed = () =>{
+        Swal.fire({
+            title: 'Applying Your Discount Offer',
+            text: "Please Wait.",
+            type: 'info',
+            showConfirmButton: false,
+          })
         checkout.client.checkout.updateEmail(checkout.checkoutId, details.email).then(() => {
 
           
@@ -50,9 +57,13 @@ const CustomerInfo = () =>{
             zip: '40202'
           };*/
        // Update the shipping address for an existing checkout. Kentucky 40202
-       checkout.client.checkout.updateShippingAddress(checkout.checkoutId, shippingAddress).then(checkout => {
-        console.log(checkout)
-        console.log("Shipping Updated")
+       checkout.client.checkout.updateShippingAddress(checkout.checkoutId, shippingAddress).then(c => {
+        console.log(c)
+        //console.log("Shipping Updated")
+        //console.log(c.webUrl)
+        
+        window.location.assign(c.webUrl);
+
        }).catch(error=>console.log(error));
     });
       }

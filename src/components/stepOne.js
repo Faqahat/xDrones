@@ -2,11 +2,15 @@ import React,{useState,useRef} from "react";
 import  "../design/style.css";
 import "../design/bootstrap.min.css";
 import Timer from "./timer"
-import StepTwo from "../components/stepTwo";
-import fetch from "node-fetch";
-import Client from "shopify-buy";
-import CustomerDetails from "../components/customerDetails";
-//import qs from "query-string";
+import StepTwo from "../components/stepTwo"
+import fetch from "node-fetch"
+import Client from "shopify-buy"
+import cart from "../images/cart.png"
+import CustomerDetails from "../components/customerDetails"
+import withLocation from "./withLocation"
+import PropTypes from "prop-types"
+
+
 // Drone ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==
 // Cam Variant ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw=
 // Propeller ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2NjQ5ODA5Nw==
@@ -15,8 +19,8 @@ import CustomerDetails from "../components/customerDetails";
 export const CheckoutContext = React.createContext("null");
 
 const SetOne = (props) => {
- /* const obj = qs.parse(props.location);
-  console.log(obj);*/
+
+
 
     const client = Client.buildClient({
         domain: 'xdronespro.myshopify.com',
@@ -32,10 +36,10 @@ const SetOne = (props) => {
 
  const StartSale = (quantity) =>{
 
-    let Sale_Origin = "236_Snapchat_Test";
+
     client.checkout.create().then((checkout) => {
-        setCheckOut({checkoutId : checkout.id, quantity: quantity,note: "Potato", client: client});
-        AddItem(checkout.id,"Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==",quantity);
+        setCheckOut({checkoutId : checkout.id, quantity: quantity, client: client});
+        AddItem(checkout.id,"Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==",quantity,props.search.t);
       });
 
     
@@ -53,12 +57,13 @@ const SetOne = (props) => {
       });*/
  }
 
- const AddItem = (cart,variant_ID,quant) =>{
+ const AddItem = (cart,variant_ID,quant,tracker) =>{
+      if(tracker == null) tracker = "direct";
       const lineItemsToAdd = [
         {
           variantId: variant_ID,
           quantity: quant,
-          customAttributes: [{key: "note", value: "MyValue"}]
+          customAttributes: [{key: "note", value: tracker}]
         }
       ];
         client.checkout.addLineItems(cart, lineItemsToAdd).then((checkout) => {
@@ -68,21 +73,24 @@ const SetOne = (props) => {
         else if(quant === 4) client.checkout.addDiscount(cart, "Bundle_4").then(() => {console.log("Discount Applied");});
         else if(quant === 5) client.checkout.addDiscount(cart, "Bundle_5").then(() => {console.log("Discount Applied"); });
         else if(quant === 10) client.checkout.addDiscount(cart, "Bundle_10").then(() => {console.log("Discount Applied"); });
-        console.log(checkout)
+       // console.log(checkout)
 
       }).catch(error => console.log(error));
        
  }
  const updateQuantity = (quantity) => {
-    window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
+
     let checkoutX = checkout;
     checkoutX.quantity = quantity;
     setCheckOut(checkoutX);
+    window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
     StartSale(quantity);
 
  }
  let CheckIcon = <i className='fas fa-check-square Check'></i>;
-
+ let CartIcon = <div style={ {marginLeft : 24}}><button className="btn btn-md " style={{borderRadius : 100 , backgroundColor: "#f7f7f7" ,borderColor: "#26b99a", borderWidth: 2 }}><img src={cart} alt ="" /></button></div>;
+ 
+ 
  function Step2() {
       if(checkout.quantity !== 0) 
       return(<><StepTwo/>  <CustomerDetails /> </>);
@@ -128,7 +136,7 @@ return (
     Buy 3 DroneX Pro, GET 2 FREE
     <div className="inline-block">
     (<span className="dynamic-price-placeholder" data-versionid="5" data-type="divided" data-dividedby="5">64</span> <span className="dynamic-currency-sign">$</span>/each)
-    </div> {(checkout.quantity === 5 ? CheckIcon : '')} 
+    </div> {(checkout.quantity === 5 ? CheckIcon : CartIcon)} 
     </div>
     </label>
     </td>
@@ -153,7 +161,7 @@ return (
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="10" data-type="divided" data-dividedby="3">73</span> <span className="dynamic-currency-sign">$</span>/each)
                      
-            </div>            {(checkout.quantity === 3 ? CheckIcon : "")} 
+            </div>            {(checkout.quantity === 3 ? CheckIcon : CartIcon)} 
             </div>
             </label>
             </td>
@@ -178,7 +186,7 @@ return (
             <b>1</b> DroneX Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="6" data-type="divided" data-dividedby="1">119</span> <span className="dynamic-currency-sign">$</span>/each)
-            </div>{(checkout.quantity === 1 ? CheckIcon : '')} 
+            </div>{(checkout.quantity === 1 ? CheckIcon : CartIcon)} 
             </div>
             </label>
             </td>
@@ -203,7 +211,7 @@ return (
             <b>2</b> DroneX Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="7" data-type="divided" data-dividedby="2">85</span> <span className="dynamic-currency-sign">$</span>/each)
-            </div>{(checkout.quantity === 2 ? CheckIcon : '')} 
+            </div>{(checkout.quantity === 2 ? CheckIcon : CartIcon)} 
             </div>
             </label>
             </td>
@@ -226,7 +234,7 @@ return (
             <b>4</b> DroneX Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="8" data-type="divided" data-dividedby="4">67</span> <span className="dynamic-currency-sign">$</span>/each)
-            </div> {(checkout.quantity === 4 ? CheckIcon : '')} 
+            </div> {(checkout.quantity === 4 ? CheckIcon : CartIcon)} 
             </div>
             </label>
             </td>
@@ -249,7 +257,7 @@ return (
             <b>10</b> DroneX Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="9" data-type="divided" data-dividedby="10">59</span> <span className="dynamic-currency-sign">$</span>/each)
-            </div> {(checkout.quantity === 10 ? CheckIcon : '')} 
+            </div> {(checkout.quantity === 10 ? CheckIcon : CartIcon)} 
             </div>
             </label>
             </td>
@@ -284,5 +292,9 @@ return (
 </CheckoutContext.Provider>
 )
 }
+SetOne.propTypes = {
+  search: PropTypes.object,
+}
 
-export default SetOne;
+
+export default withLocation(SetOne);

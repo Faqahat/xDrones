@@ -1,21 +1,23 @@
 import React from "react";
 import  "../design/style.css";
 import "../design/bootstrap.min.css";
-import Timer from "react-compound-timer";
-
+import Countdown from 'react-countdown-now';
 const timer = () => {
+    const renderer = ({  minutes, seconds }) => {
 
+        return <span>{minutes}:{seconds}</span>;
+      
+    };
     return (
-<Timer
-    initialTime={60000*24-1000}
-    direction="backward"
->
-    {() => (
+ 
         <React.Fragment>
-            <Timer.Minutes />:<Timer.Seconds />
+              <Countdown
+    date={Date.now() + 60000*24-1000}
+    renderer={renderer}
+  />
         </React.Fragment>
-    )}
-</Timer>
+    
+
     )
 }
 
