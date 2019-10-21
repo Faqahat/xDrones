@@ -9,7 +9,10 @@ import cart from "../images/cart.png"
 import CustomerDetails from "../components/customerDetails"
 import withLocation from "./withLocation"
 import PropTypes from "prop-types"
+import ReactGA from 'react-ga';
 
+
+ReactGA.initialize('UA-146793756-3');
 
 // Drone ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==
 // Cam Variant ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw=
@@ -23,7 +26,7 @@ const SetOne = (props) => {
 
 
     const client = Client.buildClient({
-        domain: 'xdronespro.myshopify.com',
+        domain: 'xDronespro.myshopify.com',
         storefrontAccessToken: '9607987e0513ca24237f22f5f6bda724'
       },fetch);
 
@@ -75,16 +78,31 @@ const SetOne = (props) => {
         else if(quant === 10) client.checkout.addDiscount(cart, "Bundle_10").then(() => {console.log("Discount Applied"); });
        // console.log(checkout)
 
-      }).catch(error => console.log(error));
+       ReactGA.event({
+        category: 'Cart_Flow',
+        action: 'Selected Product Quantity:' + quant +" Tracker : " + tracker
+      });
+
+      }).catch(error => {
+        ReactGA.exception({
+          description: error,
+          fatal: true
+        });
+        console.log(error)
+      
+      });
        
  }
- const updateQuantity = (quantity) => {
+ const updateQuantity =  (quantity) => {
 
     let checkoutX = checkout;
     checkoutX.quantity = quantity;
     setCheckOut(checkoutX);
-    window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
+    setTimeout(()=>{
+      window.scrollTo({ behavior: 'smooth', top: myRef.current.offsetTop })
+    },1500)
     StartSale(quantity);
+    
 
  }
  let CheckIcon = <i className='fas fa-check-square Check'></i>;
@@ -133,7 +151,7 @@ return (
     <label htmlFor="quantity-5">
     <div className="best-seller-text red">BEST SELLER!</div>
     <div className="package-name">
-    Buy 3 DroneX Pro, GET 2 FREE
+    Buy 3 xDrone Pro, GET 2 FREE
     <div className="inline-block">
     (<span className="dynamic-price-placeholder" data-versionid="5" data-type="divided" data-dividedby="5">64</span> <span className="dynamic-currency-sign">$</span>/each)
     </div> {(checkout.quantity === 5 ? CheckIcon : CartIcon)} 
@@ -157,7 +175,7 @@ return (
             <td>
             <label htmlFor="quantity-3">
             <div className="package-name">
-            Buy 2 DroneX Pro, GET 1 FREE
+            Buy 2 xDrone Pro, GET 1 FREE
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="10" data-type="divided" data-dividedby="3">73</span> <span className="dynamic-currency-sign">$</span>/each)
                      
@@ -183,7 +201,7 @@ return (
             <td>
             <label htmlFor="quantity-1">
             <div className="package-name">
-            <b>1</b> DroneX Pro
+            <b>1</b> xDrone Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="6" data-type="divided" data-dividedby="1">119</span> <span className="dynamic-currency-sign">$</span>/each)
             </div>{(checkout.quantity === 1 ? CheckIcon : CartIcon)} 
@@ -208,7 +226,7 @@ return (
         <td>
             <label htmlFor="quantity-2">
             <div className="package-name">
-            <b>2</b> DroneX Pro
+            <b>2</b> xDrone Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="7" data-type="divided" data-dividedby="2">85</span> <span className="dynamic-currency-sign">$</span>/each)
             </div>{(checkout.quantity === 2 ? CheckIcon : CartIcon)} 
@@ -231,7 +249,7 @@ return (
             <td>
             <label htmlFor="quantity-4">
             <div className="package-name">
-            <b>4</b> DroneX Pro
+            <b>4</b> xDrone Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="8" data-type="divided" data-dividedby="4">67</span> <span className="dynamic-currency-sign">$</span>/each)
             </div> {(checkout.quantity === 4 ? CheckIcon : CartIcon)} 
@@ -254,7 +272,7 @@ return (
             <td>
             <label htmlFor="quantity-10">
             <div className="package-name">
-            <b>10</b> DroneX Pro
+            <b>10</b> xDrone Pro
             <div className="inline-block">
             (<span className="dynamic-price-placeholder" data-versionid="9" data-type="divided" data-dividedby="10">59</span> <span className="dynamic-currency-sign">$</span>/each)
             </div> {(checkout.quantity === 10 ? CheckIcon : CartIcon)} 

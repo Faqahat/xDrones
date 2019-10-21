@@ -5,7 +5,8 @@ import secureLogo from "../images/secure-logos.png"
 import {CheckoutContext} from "./stepOne"
 import Swal from 'sweetalert2'
 //import Client from "shopify-buy";
-
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-146793756-3');
 const CustomerInfo = () =>{
     
     let [details,setDetails] = useState({
@@ -22,7 +23,7 @@ const CustomerInfo = () =>{
   let [checkout] = useContext(CheckoutContext); 
     const Proceed = () =>{
         Swal.fire({
-            title: 'Applying Your Discount Offer',
+            title: 'Checking Stock',
             text: "Please Wait.",
             type: 'info',
             showConfirmButton: false,
@@ -43,28 +44,29 @@ const CustomerInfo = () =>{
             province: details.state,
             zip: details.zipCode
         };
-        /*
-        const shippingAddress = {
-            address1: 'Chestnut Street 92',
-            address2: 'Apartment 2',
-            city: 'Louisville',
-            company: null,
-            country: 'United States',
-            firstName: 'Bob',
-            lastName: 'Norman',
-            phone: '555-625-1199',
-            province: 'Kentucky',
-            zip: '40202'
-          };*/
-       // Update the shipping address for an existing checkout. Kentucky 40202
+
        checkout.client.checkout.updateShippingAddress(checkout.checkoutId, shippingAddress).then(c => {
         console.log(c)
-        //console.log("Shipping Updated")
-        //console.log(c.webUrl)
-        
         window.location.assign(c.webUrl);
+        Swal.fire({
+            title: 'Congratulation!',
+            text: "Your discount has been applied.",
+            type: 'success',
+            showConfirmButton: false,
+          })
+          ReactGA.event({
+            category: 'Cart_Flow',
+            action: 'Checking Out | User Info:'  + details.firstName + details.lastName + " " + details.state
+          });
 
-       }).catch(error=>console.log(error));
+       }).catch(error => {
+        ReactGA.exception({
+          description: error,
+          fatal: true
+        });
+        console.log(error)
+      
+      });
     });
       }
     const  inputHandler = (e,field) =>{

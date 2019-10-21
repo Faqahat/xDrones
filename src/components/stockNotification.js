@@ -29,7 +29,7 @@ const RecentSales = () => {
                     <img src={expMark} alt=""/>
                 </div>
                 <div className="ftxup-right">
-                    <div className="ftxup-head">927 items sold this week</div>
+                    <div className="ftxup-head">927 xDrone Pro sold this week</div>
                     <div className="ftxup-footer">Stock is running out!</div>
                 </div>
             </div>
