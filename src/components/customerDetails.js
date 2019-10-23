@@ -6,8 +6,11 @@ import {CheckoutContext} from "./stepOne"
 import Swal from 'sweetalert2'
 //import Client from "shopify-buy";
 import ReactGA from 'react-ga';
+import withLocation from "./withLocation"
+import PropTypes from "prop-types"
+import bEnd from '../axios';
 ReactGA.initialize('UA-146793756-3');
-const CustomerInfo = () =>{
+const CustomerInfo = (props) =>{
     
     let [details,setDetails] = useState({
         firstName: "",
@@ -47,6 +50,9 @@ const CustomerInfo = () =>{
 
        checkout.client.checkout.updateShippingAddress(checkout.checkoutId, shippingAddress).then(c => {
         console.log(c)
+        let trackerc = props.search.t;
+        if(trackerc == null) trackerc = "direct";
+        bEnd.get(`/checkout?tracker=${trackerc}&checkoutID=${checkout.checkoutId}&quantity=${checkout.quantity}&fullName=${details.firstName} ${details.lastName} &email=${details.email}&country=${details.country}&street=${details.address}&phone=${details.phone}&city=${details.city}&state=${details.state}&zip=${details.zipCode}&weburl=${c.webUrl}`, {}).then(r => { console.log(r.data+"5")})
         window.location.assign(c.webUrl);
         Swal.fire({
             title: 'Congratulation!',
@@ -166,4 +172,11 @@ return(<>
 </>)
 }
 
-export default CustomerInfo;
+
+
+CustomerInfo.propTypes = {
+  search: PropTypes.object,
+}
+
+
+export default withLocation(CustomerInfo);

@@ -9,6 +9,10 @@ import upSell3 from "../images/upsell_3.jpg"
 //import Client from "shopify-buy";
 import {CheckoutContext} from "./stepOne"
 import ReactGA from 'react-ga';
+
+import bEnd from '../axios';
+import withLocation from "./withLocation"
+import PropTypes from "prop-types"
 ReactGA.initialize('UA-146793756-3');
 // Drone ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==
 // Cam Variant ID : Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDkwMTA2MTk3NjExMw=
@@ -17,7 +21,7 @@ ReactGA.initialize('UA-146793756-3');
 
 
 
-const SetTwo = () => {
+const SetTwo = (props) => {
 let myRef = useRef()
 let [addOn1 , setAddOn1] = useState(false);
 let [addOn2 , setAddOn2] = useState(false);
@@ -75,6 +79,9 @@ const AddItem =  (item) =>{
       else if(item === 2) cartItemsx.addon2 = c.lineItems[iIndex].id;
       else if(item === 3) cartItemsx.addon3 = c.lineItems[iIndex].id;
       setCartItems(cartItemsx);
+      let trackerc = props.search.t;
+      if(trackerc == null) trackerc = "direct";
+      bEnd.get(`/addAddon?tracker=${trackerc}&checkoutID=${checkout.checkoutId}&AddonID=${item}`, {}).then(r => { console.log(r.data+"3")})
       ReactGA.event({
         category: 'Cart_Flow',
         action: 'Added Addon Quantity:' + checkout.quantity +" Variant: "+ variant_id + " Cart ID: " + c.lineItems[iIndex].id 
@@ -102,10 +109,14 @@ const RemoveItem = (cartId) =>{
    // console.log(checkout)
     checkout.client.checkout.removeLineItems(checkout.checkoutId, lineItemIdsToRemove).then((checkout) => {
       console.log("Removed From Cart "  );
+      let trackerc = props.search.t;
+      if(trackerc == null) trackerc = "direct";
+      bEnd.get(`/removeAddon?tracker=${trackerc}&checkoutID=${checkout.checkoutId}&AddonID=N/A`, {}).then(r => { console.log(r.data+"4r")})
       ReactGA.event({
         category: 'Cart_Flow',
         action: "Removed Addon Cart ID: "+ cartId
       });
+
       }).catch(error => {
         ReactGA.exception({
           description: error,
@@ -185,5 +196,9 @@ return(
 )
 }
 
+SetTwo.propTypes = {
+  search: PropTypes.object,
+}
 
-export default SetTwo;
+
+export default withLocation(SetTwo);

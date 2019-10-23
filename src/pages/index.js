@@ -9,10 +9,15 @@ import StepOne from "../components/stepOne";
 import RecentSales from "../components/recentSales"; // Popup
 import StockNotifications from "../components/stockNotification"; // Popup
 import ReactGA from 'react-ga';
+
+
+
 ReactGA.initialize('UA-146793756-3');
 ReactGA.pageview("/home");
-//var visitor = ua('UA-146793756-3');
-const IndexPage = () => (
+const IndexPage = () =>{ 
+  
+  
+  return(
   <Layout>
     <StockNotifications/>
     <Hero />
@@ -22,6 +27,6 @@ const IndexPage = () => (
     <RecentSales />
   </Layout>
 
-)
+)}
 
 export default IndexPage

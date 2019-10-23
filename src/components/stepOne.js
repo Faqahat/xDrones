@@ -10,7 +10,7 @@ import CustomerDetails from "../components/customerDetails"
 import withLocation from "./withLocation"
 import PropTypes from "prop-types"
 import ReactGA from 'react-ga';
-
+import bEnd from '../axios';
 
 ReactGA.initialize('UA-146793756-3');
 
@@ -22,9 +22,9 @@ ReactGA.initialize('UA-146793756-3');
 export const CheckoutContext = React.createContext("null");
 
 const SetOne = (props) => {
-
-
-
+   let trackerc = props.search.t;
+   if(trackerc == null) trackerc = "direct";
+   bEnd.get(`/pageview?tracker=${trackerc}&page=Home`, {}).then(r => { console.log(r.data+"1")})
     const client = Client.buildClient({
         domain: 'xDronespro.myshopify.com',
         storefrontAccessToken: '9607987e0513ca24237f22f5f6bda724'
@@ -43,9 +43,10 @@ const SetOne = (props) => {
     client.checkout.create().then((checkout) => {
         setCheckOut({checkoutId : checkout.id, quantity: quantity, client: client});
         AddItem(checkout.id,"Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zMDg5NjU1NTY4Nzk4NQ==",quantity,props.search.t);
-      });
+        bEnd.get(`/initiateCart?tracker=${props.search.t}&checkoutID=${checkout.id}&quantity=${quantity}`, {}).then(r => { console.log(r.data+"2")})
+      }).catch(error => bEnd.get(`/initiateCart?tracker=${props.search.t}&checkoutID=Error ${error}&quantity=${quantity}`, {}).then(r => { console.log(r.data+"2 ERROR")}));
 
-    
+      
 
   /*    
       const productId = 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0LzQyODkzMzI4NzEyMTc=';
@@ -89,6 +90,7 @@ const SetOne = (props) => {
           fatal: true
         });
         console.log(error)
+        bEnd.get(`/initiateCart?tracker=${props.search.t}&checkoutID=variant: ${variant_ID} ERROR: ${error}&quantity=${quant}`, {}).then(r => { console.log(r.data+"2.5 ERROR")})
       
       });
        
